@@ -4,7 +4,7 @@ app.locals.pretty = true;
 app.set('view engine', 'jade');
 app.set('views', './views')
 app.use(express.static('public'));
-app.get('/topic', function (req, res) {
+app.get('/topic/:id', function (req, res) {
     var topics = [
         'Javascript is ...', 
         'Node is ...',
@@ -14,9 +14,12 @@ app.get('/topic', function (req, res) {
         <a href ="/topic?id=0">Javascript</a><br>
         <a href ="/topic?id=1">Node</a><br>
         <a href ="/topic?id=2">Express</a><br><br>
-        ${topics[req.query.id]}
+        ${topics[req.params.id]}
     `;
     res.send(output);
+})
+app.get('/topic/:id/:mode', function (req, res) {
+    res.send(req.params.id + ',' + req.params.mode)
 })
 app.get('/param/:module_id/:topic_id', function (req, res) {
     res.json(req.params);
