@@ -26,9 +26,9 @@ app.get('/topic/:id', function (req, res) {
         'Express is ...'
     ];
     var output = `
-        <a href ="/topic?id=0">Javascript</a><br>
-        <a href ="/topic?id=1">Node</a><br>
-        <a href ="/topic?id=2">Express</a><br><br>
+        <a href ="/topic/0">Javascript</a><br>
+        <a href ="/topic/1">Node</a><br>
+        <a href ="/topic/2">Express</a><br><br>
         ${topics[req.params.id]}
     `;
     res.send(output);
