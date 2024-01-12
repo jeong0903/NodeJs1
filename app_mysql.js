@@ -1,10 +1,18 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var fs = require("fs");
+var mysql = require("mysql");
+var conn = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "admin1234",
+  database: "o2",
+});
+conn.connect();
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.locals.pretty = true;
-app.set("views", "./views_file");
+app.set("views", "./views_mysql");
 app.set("view engine", "pug");
 app.get("/topic/new", function (req, res) {
   fs.readdir("data", function (err, files) {
@@ -12,11 +20,15 @@ app.get("/topic/new", function (req, res) {
       console.log(err);
       res.status(500).send("Internal Server Error");
     }
-    res.render("new", {topics: files});
+    res.render("new", { topics: files });
   });
 });
 app.get(["/topic", "/topic/:id"], function (req, res) {
-  // topics 정보
+  var sql = "SELECT id, title FROM topic";
+  conn.query(sql, function (err, topics, files) {
+    res.render("view", { topics: topics});
+  })
+  /*  // topics 정보
   fs.readdir("data", function (err, files) {
     if (err) {
       console.log(err);
@@ -41,6 +53,7 @@ app.get(["/topic", "/topic/:id"], function (req, res) {
       });
     }
   });
+*/
 });
 
 app.post("/topic", function (req, res) {
@@ -51,7 +64,7 @@ app.post("/topic", function (req, res) {
       console.log(err);
       res.status(500).send("Internal Server Error");
     }
-    res.redirect("/topic/"+title);
+    res.redirect("/topic/" + title);
   });
 });
 app.listen(3000, function () {
