@@ -26,34 +26,21 @@ app.get("/topic/new", function (req, res) {
 app.get(["/topic", "/topic/:id"], function (req, res) {
   var sql = "SELECT id, title FROM topic";
   conn.query(sql, function (err, topics, files) {
-    res.render("view", { topics: topics});
-  })
-  /*  // topics 정보
-  fs.readdir("data", function (err, files) {
-    if (err) {
-      console.log(err);
-      res.status(500).send("Internal Server Error");
-    }
     var id = req.params.id;
-    if (id) {
-      // id값이 있을 때
-      fs.readFile("data/" + id, "utf8", function (err, data) {
+    if(id){
+      var sql = 'SELECT * FROM topic WHERE id=?'
+      conn.query(sql, [id], function (err, topic, fields) {
         if (err) {
           console.log(err);
           res.status(500).send("Internal Server Error");
+        }else{
+          res.render('view', {topics:topics, topic:topic[0]})
         }
-        res.render("view", { topics: files, title: id, description: data });
-      });
-    } else {
-      // id값이 없을 때
-      res.render("view", {
-        topics: files,
-        title: "Welcome",
-        description: "Hello world!",
-      });
+      })
+    } else{
+      res.render("view", { topics: topics});
     }
-  });
-*/
+  })
 });
 
 app.post("/topic", function (req, res) {
