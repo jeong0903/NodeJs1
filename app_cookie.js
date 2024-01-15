@@ -1,7 +1,7 @@
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var app = express();
-app.use(cookieParser());
+app.use(cookieParser('1234!@#'));
 
 var products = {
   1: { title: "The history of web 1" },
@@ -30,8 +30,8 @@ cart = {
 */
 app.get("/cart/:id", function (req, res) {
   var id = req.params.id;
-  if (req.cookies.cart) {
-    var cart = req.cookies.cart;
+  if (req.signedCookies.cart) {
+    var cart = req.signedCookies.cart;
   } else {
     var cart = {};
   }
@@ -39,17 +39,19 @@ app.get("/cart/:id", function (req, res) {
     cart[id] = 0;
   }
   cart[id] = parseInt(cart[id]) + 1;
-  res.cookie("cart", cart);
+  res.cookie("cart", cart, {signed: true});
   res.redirect("/cart");
 });
+
 app.get("/cart", function (req, res) {
-  var cart = req.cookies.cart;
+  var cart = req.signedCookies.cart;
   if (!cart) {
     res.send("Empty!");
   } else {
     var output = "";
     for (var id in cart) {
-      output += `<li>${products[id].title}(${cart[id]})</li>`;
+      output += `<li>${products[id].title}
+      (${cart[id]})</li>`;
     }
   }
   res.send(`
