@@ -22,6 +22,26 @@ app.get("/products", function (req, res) {
     <a href="/cart">Cart
     `);
 });
+/* 
+cart = {
+  1(상품id) : 2(클릭 수),
+  2(상품id) : 1(클릭 수)
+}
+*/
+app.get("/cart/:id", function (req, res) {
+  var id = req.params.id;
+  if(req.cookies.cart){
+    var cart = req.cookies.cart;
+  } else{
+    var cart = {};
+  }
+  if(!cart [id]){
+    cart [id] = 0;
+  }
+  cart [id] = parseInt(cart [id])+ 1;
+  res.cookie("cart", cart);
+  res.redirect('/cart');
+});
 
 app.listen(3000, function () {
   console.log("Connected 3000 port is running!");
