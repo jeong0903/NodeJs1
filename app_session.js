@@ -39,16 +39,32 @@ app.get("/auth/login", function (req, res) {
   res.send(output);
 });
 
+app.get("/welcome", function (req, res) {
+  if(req.session.displayName){
+    res.send(`
+    <h1>hello, ${req.session.displayName} !</h1>
+    <a hef="/auth/logout">Log out</a>
+    `)
+  } else{
+    res.send(`
+    <h1>Welcome</h1>
+    <a href="/auth/login">Login</a>
+    `)
+  }
+});
+
 app.post("/auth/login", function (req, res) {
   var user = {
-    username : 'jane',
-    password : '1234'
-  }
+    username: "jane",
+    password: "1234",
+    displayName: "Jane",
+  };
   var uname = req.body.username;
   var pwd = req.body.password;
 
-  if(uname === user.username && pwd === user.password){
-    res.redirect('/welcome')
+  if (uname === user.username && pwd === user.password) {
+    req.session.displayName = user.displayName;
+    res.redirect("/welcome");
   } else {
     res.send('Who are you? <a href ="/auth/login">back</a>');
   }
