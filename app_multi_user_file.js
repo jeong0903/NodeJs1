@@ -1,7 +1,7 @@
 var express = require("express");
 var session = require("express-session");
 var FileStore = require("session-file-store")(session);
-var md5 = require("md5");
+var sha = require("sha256");
 var bodyParser = require("body-parser");
 var app = express();
 
@@ -51,12 +51,15 @@ app.get("/welcome", function (req, res) {
   if (req.session.displayName) {
     res.send(`
     <h1>hello, ${req.session.displayName} !</h1>
-    <a href="/auth/logout">Log out</a>
+    <a href="/auth/logout">log out</a>
     `);
   } else {
     res.send(`
     <h1>Welcome</h1>
-    <a href="/auth/login">Login</a>
+    <ul>
+    <li><a href="/auth/login">Login</a></li>
+    <li><a href="/auth/register">Register</a></li>
+    </ul>
     `);
   }
 });
@@ -66,7 +69,7 @@ app.post("/auth/login", function (req, res) {
   var pwd = req.body.password;
   for (var i = 0; i < users.length; i++) {
     var user = users[i];
-    if (uname === user.username && md5(pwd) === user.password) {
+    if (uname === user.username && sha(pwd+user.salt) === user.password) {
       req.session.displayName = user.displayName;
       return req.session.save(function () {
         res.redirect("/welcome");
@@ -75,12 +78,19 @@ app.post("/auth/login", function (req, res) {
   }
   res.send('who are you? <a href ="/auth/login">log in</a>')
 });
-
+// var salt = 'asdf1234!@#$'
 var users = [
   {
     username: "jane",
-    password: "81dc9bdb52d04dc20036dbd8313ed055",
+    password: '4b5f2495286d9f6d7c10b2b502087931f63e2bd25a87a686c2615bcd94f0bf30',
+    salt: 'salt111',
     displayName: "Jane",
+  },
+  {
+    username: "user2",
+    password: '4b115e6ef92b3ef82edef500b21d6a208717a42ce105c81d03c4492f392668e1',
+    salt: 'salt222',
+    displayName: "Kermit",
   },
 ];
 
