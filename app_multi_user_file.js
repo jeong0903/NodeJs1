@@ -1,7 +1,9 @@
 var express = require("express");
 var session = require("express-session");
 var FileStore = require("session-file-store")(session);
-var sha = require("sha256");
+var pbkdf2 = require("pbkdf2-password");
+var hasher = pbkdf2();
+
 var bodyParser = require("body-parser");
 var app = express();
 
@@ -69,7 +71,7 @@ app.post("/auth/login", function (req, res) {
   var pwd = req.body.password;
   for (var i = 0; i < users.length; i++) {
     var user = users[i];
-    if (uname === user.username && sha(pwd+user.salt) === user.password) {
+    if (uname === user.username && pbkdf2(pwd+user.salt) === user.password) {
       req.session.displayName = user.displayName;
       return req.session.save(function () {
         res.redirect("/welcome");
@@ -82,15 +84,9 @@ app.post("/auth/login", function (req, res) {
 var users = [
   {
     username: "jane",
-    password: '4b5f2495286d9f6d7c10b2b502087931f63e2bd25a87a686c2615bcd94f0bf30',
-    salt: 'salt111',
+    password: 'wy3aXKhBRVcvyLzi3xZiecralO0/836dObMFbg4ZddLTcsOmipka7HSPRarPXryoU4la4OIjVaP8N8jw0vG1A/YenoNDFMjk+eL2B09K0tm4EzIJ0eqrbuYka84wvYwh59qBjttf1TELqWEVy50mVJaFFQiQUQh43bkutFVUPtg=',
+    salt: 'v4rZzwL2+e2A917wNDHuWbbV1h35CtGtO6b/P4CgnL6bwpviQ8ilA7qkwY2+S1DX+Fu0O4BxWwXMnjzwfHkJFA==',
     displayName: "Jane",
-  },
-  {
-    username: "user2",
-    password: '4b115e6ef92b3ef82edef500b21d6a208717a42ce105c81d03c4492f392668e1',
-    salt: 'salt222',
-    displayName: "Kermit",
   },
 ];
 
