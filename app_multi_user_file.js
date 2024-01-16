@@ -101,20 +101,41 @@ var users = [
     displayName: "Jane",
   },
 ];
-
 app.post("/auth/register", function (req, res) {
-  var user = {
-    username: req.body.username,
-    password: req.body.password,
-    displayName: req.body.displayName,
-  };
-  users.push(user);
-  req.session.displayName = req.body.displayName;
-  req.session.save(function () {
-    res.redirect("/welcome");
-  });
+  hasher({password: req.body.password}, function (err, pass, salt, hash) {
+    var user = {
+      username: req.body.username,
+      password: hash,
+      salt: salt,
+      displayName: req.body.displayName,
+    };
+    users.push(user);
+    req.session.displayName = req.body.displayName;
+    req.session.save(function () {
+      res.redirect("/welcome");
+    });
+  })
 });
-
+app.get('/auth/register', function (req, res) {
+  var output = `
+  <h1>REGISTER</h1>
+  <form action="/auth/register" method="post">
+    <p>
+      <input type="text" name="username" placeholder="user name">
+    </p>
+    <p>
+      <input type="password" name="password" placeholder="password">
+    </p>
+    <p>
+      <input type="text" name="displayName" placeholder="displayName">
+    </p>
+    <p>
+      <input type="submit">
+    </p>
+  </form>
+  `;
+  res.send(output);
+})
 app.listen(3000, function () {
   console.log("Connected 3000 port is running!");
 });
