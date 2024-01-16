@@ -39,17 +39,22 @@ app.get("/auth/login", function (req, res) {
   res.send(output);
 });
 
+app.get("/auth/logout", function (req, res) {
+  delete req.session.displayName;
+  res.redirect("/welcome");
+});
+
 app.get("/welcome", function (req, res) {
-  if(req.session.displayName){
+  if (req.session.displayName) {
     res.send(`
     <h1>hello, ${req.session.displayName} !</h1>
-    <a hef="/auth/logout">Log out</a>
-    `)
-  } else{
+    <a href="/auth/logout">Log out</a>
+    `);
+  } else {
     res.send(`
     <h1>Welcome</h1>
     <a href="/auth/login">Login</a>
-    `)
+    `);
   }
 });
 
