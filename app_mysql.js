@@ -1,8 +1,8 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var fs = require("fs");
-var mysql = require("mysql");
 const { result } = require("underscore");
+var mysql = require("mysql");
 var conn = mysql.createConnection({
   host: "localhost",
   user: "root",
